@@ -4,10 +4,10 @@ from multiprocessing import Process
 
 broker = '39.106.189.252'
 port = 1883
-topic = "/pub"
+topic = "/sub"
 client_id = f'python-mqtt-{random.randint(0, 100)}'
 
-pub_topic = "/sub"
+pub_topic = "/pub"
 pub_hostname = "39.106.189.252"
 pub_port = 1883
 

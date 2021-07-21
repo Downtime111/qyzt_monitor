@@ -54,9 +54,13 @@ def on_message(client, userdata, msg):
 
 
 def run_subscribe():
-    client = connect_mqtt()
-    subscribe(client)
-    client.loop_forever()
+    try:
+        client = connect_mqtt()
+        subscribe(client)
+        client.loop_forever()
+    except Exception as e:
+        print(e)
+        time.sleep(5)
 
 
 if __name__ == "__main__":
