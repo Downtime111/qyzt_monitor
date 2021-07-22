@@ -2,15 +2,16 @@ import random
 import time
 
 import file_change
-from mqtt_transfer import *
+from mqtt_transfer_col import *
 from multiprocessing import Process
 import multiprocessing
 
+#'''
 broker = '39.106.189.252'
 port = 1883
 topic = "/pub"
 client_id = f'python-mqtt-{random.randint(0, 100)}'
-
+#'''
 pub_topic = "/sub"
 pub_hostname = "39.106.189.252"
 pub_port = 1883
@@ -26,8 +27,9 @@ def publish_order():
             time.sleep(15)
         except Exception as e1:
             print(f"INFO:[Cannot find data! Please check the path.]")
+            print(e1)
             time.sleep(5)
-            break
+            #break
         except TimeoutError:
             time.sleep(1)
             print("超时")

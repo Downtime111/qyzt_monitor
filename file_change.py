@@ -12,7 +12,7 @@ def read_file():
         full_list = []  # basic full content list
         corr_dict = {}  # time:content
 
-        for line in data:
+        for line in data:#对可迭代对象进行迭代遍历,会自动地使用缓冲IO（buffered IO）以及内存管理
             time = "".join(re.findall("^\"([0-9]+-[0-9]+-[0-9]+ [0-9]+:[0-9]+:[0-9]+)\"",line))
             other = "".join(re.findall("\",(.*)$", line))
             #print(other)
@@ -63,7 +63,7 @@ def get_content():
     #    print(i)
     with open ("./STR22_Count.log","w+") as log:
         log.write("{{\'{tim}\':\'{le}\'}}".format(tim = recent_flag,le = len(full_list)))
-    #print(find_list)
+    print(find_list)
     return find_list
 
 def __get_last_line(filename):
