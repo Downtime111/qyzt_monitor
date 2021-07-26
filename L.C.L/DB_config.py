@@ -22,11 +22,14 @@ POOL = PooledDB(
     # 2 = when a cursor is created,
     # 4 = when a query is executed,
     # 7 = always
-    host='192.168.24.5',
-    port=3306,
+    #host='192.168.24.5',
+    #port=3306,
+    host='server.natappfree.cc',
+    port=33890,
     user='db',
     password='jason491147784',
-    database='scan',
+    #database='scan',
+    database='zt_monitor',
     charset='utf8'
 )
 

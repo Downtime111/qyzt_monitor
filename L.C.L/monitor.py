@@ -1,15 +1,17 @@
 import random
-from mqtt_transfer_mon import *
+import time
+
+from mqtt_transfer_lcl import run_subscribe
 from multiprocessing import Process
 import multiprocessing
 
 
-#'''
+'''
 broker = '39.106.189.252'
 port = 1883
 topic = "/sub"
 client_id = f'python-mqtt-{random.randint(0, 100)}'
-#'''
+'''
 pub_topic = "/pub"
 pub_hostname = "39.106.189.252"
 pub_port = 1883
@@ -32,6 +34,7 @@ def publish_order():
 def subscribe_data():
     while True:
         run_subscribe()
+        time.sleep(10)
     #gevent.sleep(1)
 
 

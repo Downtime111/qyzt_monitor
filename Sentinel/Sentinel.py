@@ -1,29 +1,35 @@
 import random
 import time
 
-import file_change
-from mqtt_transfer_col import *
+import detect_filechange
+from mqtt_transfer_sen import *
 from multiprocessing import Process
 import multiprocessing
+import configparser
 
-#'''
+mqtt_config = configparser.ConfigParser()
+mqtt_config.read("./mqtt_config.ini")
+
+'''
 broker = '39.106.189.252'
 port = 1883
 topic = "/pub"
 client_id = f'python-mqtt-{random.randint(0, 100)}'
-#'''
-pub_topic = "/sub"
-pub_hostname = "39.106.189.252"
-pub_port = 1883
+'''
+pub_hostname = mqtt_config["publish"]['pub_hostname']
+pub_port = int(mqtt_config["publish"]['pub_port'])
+pub_qos = int(mqtt_config["publish"]['pub_qos'])
+pub_client_id = mqtt_config["publish"]['pub_client_id']
+pub_topic = mqtt_config["publish"]['pub_topic']
 
 
 def publish_order():
     while True:
         try:
-            for msg in file_change.get_content():
+            for pub_msg in detect_filechange.get_content():
                 #print("1")
-                if msg != "":
-                    thr_send_message(msg,pub_topic,pub_hostname,pub_port)        #gevent.sleep(2)  # 协程遇到耗时操作后会自动切换其他协程运行
+                if pub_msg != "":
+                    thr_send_message(pub_msg, pub_topic, pub_hostname, pub_port, pub_qos)       #gevent.sleep(2)  # 协程遇到耗时操作后会自动切换其他协程运行
             time.sleep(15)
         except Exception as e1:
             print(f"INFO:[Cannot find data! Please check the path.]")

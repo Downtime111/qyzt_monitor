@@ -1,18 +1,27 @@
+"""
+@Description:分析并获取采集数据
+@Version:2.0
+@Author:Garrett
+"""
+
 import os
 import re
 import datetime
-
-
-
+#****************************************************************************************************************************
+location = "beijing01"
+"""
+@
+"""
 def read_file():
     #with open ("./data/_STR22_Min.dat","r") as data:
-    with open("./_STR22_Min.dat", "r") as data:
+    with open("_STR22_Min.dat", "r") as data:
         time_list = []  # device time list
 
         full_list = []  # basic full content list
         corr_dict = {}  # time:content
 
-        for line in data:#对可迭代对象进行迭代遍历,会自动地使用缓冲IO（buffered IO）以及内存管理
+        # 对可迭代对象进行迭代遍历,会自动地使用缓冲IO（buffered IO）以及内存管理
+        for line in data:
             time = "".join(re.findall("^\"([0-9]+-[0-9]+-[0-9]+ [0-9]+:[0-9]+:[0-9]+)\"",line))
             other = "".join(re.findall("\",(.*)$", line))
             #print(other)
@@ -26,7 +35,9 @@ def read_file():
         #print(corr_dict)
         return time_list, full_list, corr_dict
 
-
+"""
+@
+"""
 def get_content():
     global last_len
     find_list = []  # finded full content list
@@ -41,30 +52,44 @@ def get_content():
         num =  int(len(full_list)) - int(last_len)
         #num = 1
         #print(num)
+        # 当前条数大于日志记录条数
         if num >= 0:
             if num == 1:
+                # 一次增加一条
                 recent_content = corr_dict[recent_flag]
-                find_list.append(recent_flag+","+recent_content)
+                find_list.append(location+","+recent_flag+","+recent_content)
             else:
+                # 一次增加多条
                 for i in range(0, num, 1):
                     min = datetime.timedelta(minutes=i)
                     tim_flag = (recent_time - min).strftime("%Y-%m-%d %H:%M:%S")
                     recent_content = corr_dict[tim_flag]
-                    find_list.append(tim_flag + "," + recent_content)
-        else:
-            recent_content = corr_dict[recent_flag]
-            find_list.append(recent_flag + "," + recent_content)
+                    find_list.append(location+","+recent_flag+","+recent_content)
+            #日志写入
             with open("./STR22_Count.log", "w+") as log:
-                log.write("{{\'{tim}\':\'{le}\'}}".format(tim=recent_flag, le=1))
+                log.write("{{\'{tim}\':\'{le}\'}}".format(tim=recent_flag, le=len(full_list)))
+        # 当前条数小于日志记录条数
+        else:
+            # 新一天更新
+            if len(full_list) == 1:
+                recent_content = corr_dict[recent_flag]
+                find_list.append(location+","+recent_flag+","+recent_content)
+                with open("./STR22_Count.log", "w+") as log:
+                    log.write("{{\'{tim}\':\'{le}\'}}".format(tim=recent_flag, le=1))
+            else:
+                with open("./STR22_Count.log", "w+") as log:
+                    log.write("{{\'{tim}\':\'{le}\'}}".format(tim=recent_flag, le=0))
     except Exception as e:
-        print(e)
+        #(e)
+        # 没有找到日志获取当前条数
+        with open("./STR22_Count.log", "w+") as log:
+            log.write("{{\'{tim}\':\'{le}\'}}".format(tim=recent_flag, le=len(full_list)))
         print("INFO:[Add log file successful]")
     #for i in find_list:
     #    print(i)
-    with open ("./STR22_Count.log","w+") as log:
-        log.write("{{\'{tim}\':\'{le}\'}}".format(tim = recent_flag,le = len(full_list)))
-    print(find_list)
+    #print(find_list)
     return find_list
+
 
 def __get_last_line(filename):
     try:
@@ -90,8 +115,11 @@ def __get_last_line(filename):
 
 #def
 if __name__ == "__main__":
-    #read_file()
+
+
     get_content()
+
+    # read_file()
     #last = eval(__get_last_line("STR22_Count.log"))
     #print(last)
     #print(last['2021-07-20 22:22:00'])

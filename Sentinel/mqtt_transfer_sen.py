@@ -1,10 +1,16 @@
 import time
-import random
 from paho.mqtt import client as mqtt_client
 from paho.mqtt import publish
+import configparser
 
-from monitor import client_id, broker, topic, port
+mqtt_config = configparser.ConfigParser()
+mqtt_config.read("./mqtt_config.ini")
 
+#from Sentinel.Sentinel import client_id, broker, topic, port
+broker = mqtt_config["subscribe"]['broker']
+port = int(mqtt_config["subscribe"]['port'])
+topic = mqtt_config["subscribe"]['topic']
+client_id = mqtt_config["subscribe"]['client_id']
 '''
 broker = '39.106.189.252'
 port = 1883
@@ -13,14 +19,13 @@ topic = "/pub"
 client_id = f'python-mqtt-{random.randint(0, 100)}'
 '''
 
-def thr_send_message(msg,send_topic,hostname,port):
+def thr_send_message(msg, send_topic, hostname, portp, qosp):
     #print("发送donehello 消息。。。")
     # print(client)
     #print("子线程id：" + str(threading.current_thread().ident))
     #time.sleep(0)
     # client.publish("donehello", "donehello") #这种方式下的client.on_message 和 client.publish 共用唯一一个client 实例，会造成无法同时收发问题。
-    result = publish.single(send_topic, msg, hostname="39.106.189.252",
-                   port=1883, qos=2, client_id="mon-01")
+    result = publish.single(send_topic, msg, hostname=hostname, port=portp, qos=qosp)
     # 通过该方式使client.on_message 和 client.publish 不再共用同一个client，解决了收发无法同时的问题。
     if result == None:
         #print(f"Send `{msg}` to topic `{topic}`")
@@ -44,7 +49,7 @@ def on_connect(client, userdata, flags, rc):
 
 
 def subscribe(client: mqtt_client):
-    client.subscribe(topic, 2)
+    client.subscribe(topic, int(mqtt_config["subscribe"]["rec_qos"]))
     client.on_message = on_message
     client.loop_forever()
 
