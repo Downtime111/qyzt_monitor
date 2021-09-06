@@ -7,14 +7,14 @@
 import os
 import re
 import datetime
-#****************************************************************************************************************************
-location = "beijing01"
+
 """
 @
 """
-def read_file():
+
+def read_file(path):
     #with open ("./data/_STR22_Min.dat","r") as data:
-    with open("_STR22_Min.dat", "r") as data:
+    with open(path, "r") as data:
         time_list = []  # device time list
 
         full_list = []  # basic full content list
@@ -38,15 +38,28 @@ def read_file():
 """
 @
 """
-def get_content():
+
+
+def get_content(path, stations, devices, sns, zones):
+    """
+    TODO:
+        1. 根据devices 清洗数据
+
+    :param path:
+    :param stations:
+    :param devices:
+    :param sns:
+    :param zones:
+    :return:
+    """
     global last_len
     find_list = []  # finded full content list
-    time_list, full_list, corr_dict = read_file()
+    time_list, full_list, corr_dict = read_file(path)
     recent_time = max(time_list)
     recent_flag = str(recent_time.strftime("%Y-%m-%d %H:%M:%S"))
     #print(recent_flag)
     try:
-        shang = eval(__get_last_line("./STR22_Count.log"))
+        shang = eval(__get_last_line("./"+devices+"_Count.log"))
         for t in shang.keys():
             last_len = shang[t]
         num =  int(len(full_list)) - int(last_len)
@@ -57,32 +70,32 @@ def get_content():
             if num == 1:
                 # 一次增加一条
                 recent_content = corr_dict[recent_flag]
-                find_list.append(location+","+recent_flag+","+recent_content)
+                find_list.append(stations+","+devices+","+sns+","+zones+","+recent_flag+","+recent_content)
             else:
                 # 一次增加多条
                 for i in range(0, num, 1):
                     min = datetime.timedelta(minutes=i)
                     tim_flag = (recent_time - min).strftime("%Y-%m-%d %H:%M:%S")
                     recent_content = corr_dict[tim_flag]
-                    find_list.append(location+","+recent_flag+","+recent_content)
+                    find_list.append(stations+","+devices+","+sns+","+zones+","+recent_flag+","+recent_content)
             #日志写入
-            with open("./STR22_Count.log", "w+") as log:
+            with open("./"+devices+"_Count.log", "w+") as log:
                 log.write("{{\'{tim}\':\'{le}\'}}".format(tim=recent_flag, le=len(full_list)))
         # 当前条数小于日志记录条数
         else:
             # 新一天更新
             if len(full_list) == 1:
                 recent_content = corr_dict[recent_flag]
-                find_list.append(location+","+recent_flag+","+recent_content)
-                with open("./STR22_Count.log", "w+") as log:
+                find_list.append(stations+","+devices+","+sns+","+zones+","+recent_flag+","+recent_content)
+                with open("./"+devices+"_Count.log", "w+") as log:
                     log.write("{{\'{tim}\':\'{le}\'}}".format(tim=recent_flag, le=1))
             else:
-                with open("./STR22_Count.log", "w+") as log:
+                with open("./"+devices+"_Count.log", "w+") as log:
                     log.write("{{\'{tim}\':\'{le}\'}}".format(tim=recent_flag, le=0))
     except Exception as e:
         #(e)
         # 没有找到日志获取当前条数
-        with open("./STR22_Count.log", "w+") as log:
+        with open("./"+devices+"_Count.log", "w+") as log:
             log.write("{{\'{tim}\':\'{le}\'}}".format(tim=recent_flag, le=len(full_list)))
         print("INFO:[Add log file successful]")
     #for i in find_list:
@@ -117,7 +130,8 @@ def __get_last_line(filename):
 if __name__ == "__main__":
 
 
-    get_content()
+    #get_content()
+    read_file('E:\zt_monitor\Sentinel\_STR22_Min.dat')
 
     # read_file()
     #last = eval(__get_last_line("STR22_Count.log"))

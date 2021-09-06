@@ -24,9 +24,9 @@ def thr_send_message(msg, send_topic, hostname, portp, qosp):
     # print(client)
     #print("子线程id：" + str(threading.current_thread().ident))
     #time.sleep(0)
-    # client.publish("donehello", "donehello") #这种方式下的client.on_message 和 client.publish 共用唯一一个client 实例，会造成无法同时收发问题。
+    # client.publish("donehello", "donehello") #
     result = publish.single(send_topic, msg, hostname=hostname, port=portp, qos=qosp)
-    # 通过该方式使client.on_message 和 client.publish 不再共用同一个client，解决了收发无法同时的问题。
+    # client.on_message 和 client.publish 不再共用同一个client
     if result == None:
         #print(f"Send `{msg}` to topic `{topic}`")
         print(f"Send `{msg}` to topic")
@@ -70,4 +70,5 @@ def run_subscribe():
 
 if __name__ == "__main__":
     # run_subscribe()
-    thr_send_message("msg")
+    #thr_send_message("msg")
+    pass

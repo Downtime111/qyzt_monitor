@@ -1,29 +1,54 @@
 # -*- coding: UTF-8 -*-
+
+
 """
 @描述：数据库连接池管理模块
-@作者：CYH
+@作者：garrett
 @版本：V1.0
-@创建时间：2016-11-24 上午8:43:14
+@创建时间：2021-08-11
 """
 
-from DB_config import POOL
+
+try:
+    from DB_config import POOL
+except Exception as e:
+    print("[ERR] Connect to DB error")
 import pymysql
+
 
 """
 @FUN:创建连接
 """
 def create_conn():
-    conn = POOL.connection()
-    cursor = conn.cursor(pymysql.cursors.DictCursor)
-    return conn, cursor
+    """
+    @创建连接池连接
+    """
+    try:
+        conn = POOL.connection()
+        cursor = conn.cursor(pymysql.cursors.DictCursor)
+        return conn, cursor
+    except Exception as e:
+        print(e)
 
 
 def close_conn(conn, cursor):
-    conn.close()
-    cursor.close()
+    """
+    @关闭连接池连接
+    """
+    try:
+        conn.close()
+        cursor.close()
+    except Exception as e:
+        print(e)
 
 
 def select_one(sql, args):
+    """
+    @查询一条
+    :param sql:sql语句
+    :param args:条件
+    :return:返回执行状态
+    """
     conn, cur = create_conn()
     cur.execute(sql, args)
     result = cur.fetchone()
@@ -32,6 +57,26 @@ def select_one(sql, args):
 
 
 def select_all(sql, args):
+    """
+    @查询多条
+    :param sql:sql语句
+    :param args:条件
+    :return:返回执行状态
+    """
+    conn, cur = create_conn()
+    cur.execute(sql, args)
+    result = cur.fetchall()
+    close_conn(conn, cur)
+    return result
+
+
+def execute(sql, args=None):
+    """
+    @执行sql语句
+    :param sql:sql语句
+    :param args:条件
+    :return:返回执行状态
+    """
     conn, cur = create_conn()
     cur.execute(sql, args)
     result = cur.fetchall()
@@ -40,6 +85,12 @@ def select_all(sql, args):
 
 
 def insert_one(sql, args):
+    """
+    @插入一条记录
+    :param sql:sql语句
+    :param args:条件
+    :return:返回执行状态
+    """
     conn, cur = create_conn()
     result = cur.execute(sql, args)
     conn.commit()
@@ -47,7 +98,27 @@ def insert_one(sql, args):
     return result
 
 
+def insert_many(sql, args):
+    """
+    @插入多条记录
+    :param sql:sql语句
+    :param args:条件
+    :return:返回执行状态
+    """
+    conn, cur = create_conn()
+    result = cur.executemany(sql, args)
+    conn.commit()
+    close_conn(conn, cur)
+    return result
+
+
 def delete_one(sql, args):
+    """
+    @删除一条记录
+    :param sql:sql语句
+    :param args:条件
+    :return:返回执行状态
+    """
     conn, cur = create_conn()
     result = cur.execute(sql, args)
     conn.commit()
@@ -56,6 +127,12 @@ def delete_one(sql, args):
 
 
 def update_one(sql, args):
+    """
+    @更新一条记录
+    :param sql:sql语句
+    :param args:条件
+    :return:返回执行状态
+    """
     conn, cur = create_conn()
     result = cur.execute(sql, args)
     conn.commit()

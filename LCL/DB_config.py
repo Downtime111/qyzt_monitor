@@ -7,7 +7,7 @@ import pymysql
 from dbutils.pooled_db import PooledDB
 POOL = PooledDB(
     creator=pymysql,    # 使用链接数据库的模块
-    maxconnections=10,  # 连接池允许的最大连接数，0和None表示不限制连接数
+    maxconnections=20,  # 连接池允许的最大连接数，0和None表示不限制连接数
     mincached=10,   # 初始化时，链接池中至少创建的空闲的链接，0表示不创建
     maxcached=10,   # 链接池中最多闲置的链接，0和None不限制
     maxshared=20,   # 链接池中最多共享的链接数量，0和None表示全部共享。
@@ -24,12 +24,12 @@ POOL = PooledDB(
     # 7 = always
     #host='192.168.24.5',
     #port=3306,
-    host='server.natappfree.cc',
-    port=33890,
-    user='db',
-    password='jason491147784',
+    host='39.106.189.252',
+    port=3316,
+    user='qiyun',
+    password='QIYUN888',
     #database='scan',
-    database='zt_monitor',
+    database='test',
     charset='utf8'
 )
 

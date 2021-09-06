@@ -5,7 +5,6 @@
 """
 from influxdb_client import InfluxDBClient, Point
 from influxdb_client.client.write_api import SYNCHRONOUS
-from datetime import datetime
 from datetime import datetime,timezone,timedelta
 
 """
@@ -24,7 +23,7 @@ records 传感器参数
 """
 
 
-def insert_str22_record(stations, devices, sns, zones, utc_times, sensors):
+def insert_pg_str22_record(stations, devices, sns, zones, utc_times, sensors):
     try:
         client = InfluxDBClient.from_config_file("influxdb_config.ini")
         # client = InfluxDBClient(url=url, token=token, org=org)
@@ -82,36 +81,40 @@ def insert_str22_record(stations, devices, sns, zones, utc_times, sensors):
             #.time(datetime.strptime("2021-07-26 03:01","%Y-%m-%d %H:%M").isoformat("T"))
             #.time(datetime.utcnow().isoformat("T"))
         write_api.write(bucket=stations, record=p)
+
     except Exception as e:
         print(e)
         print("Insert record ERR!")
 
-def insert_OTT_record(sns, zones, stations, devices, logger_times,sensors):
+"""    
+def insert_pg_ott_record(sns, zones, stations, devices, logger_times,sensors):
 
         client = InfluxDBClient.from_config_file("influxdb_config.ini")
         # client = InfluxDBClient(url=url, token=token, org=org)
         write_api = client.write_api(write_options=SYNCHRONOUS)
         utc_time ="{datetime}".format(datetime=(datetime.strptime(logger_times, "%Y-%m-%d %H:%M:%S")-timedelta(hours=8)).isoformat("T"))
-        """ p = Point(devices) \
+         p = Point(devices) \
             .tag("SN", sns) \
             .tag("ZONE", zones) \
             .field("temperature", float(sensors[0])) \
             .field("humi", float(sensors[1])) \
-            .time(utc_time)"""
+            .time(utc_time)
         p = {"measurement": devices,"tags": {"SN": sns,"ZONE": zones},"fields":{"temperature": float(sensors[0]),"humi": float(sensors[1]),"time": utc_time}}
         write_api.write(bucket=stations, record=p)
-        """    
+        
     except Exception as e:
         print(e)
         print("Insert record ERR!")
-    """
+"""
 
 
 if __name__ == "__main__":
+    """
     sn = "b01"
     zone = "beijing"
     station = "pinggu"
     device = "str22"
     sensor = ["20333", "3"]
     logger_time = "2021-07-26 15:08:30"
-    insert_str22_record(sn, zone, station, device, logger_time, sensor)
+    insert_pg_str22_record(sn, zone, station, device, logger_time, sensor)
+    """
